@@ -1,0 +1,3 @@
+[submodule "deps/8080"]
+	path = deps/8080
+	url = https://github.com/superzazu/8080.git
