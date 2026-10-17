@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "invaders360", "invaders360\invaders360.vcxproj", "{10CF9C2F-73B3-49FA-9B63-393ACF8D1181}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "8080", "deps\8080.vcxproj", "{7B2ADD30-F831-42A0-A465-E414ECD12B19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CodeAnalysis|Xbox 360 = CodeAnalysis|Xbox 360
@@ -25,6 +27,24 @@ Global
 		{10CF9C2F-73B3-49FA-9B63-393ACF8D1181}.Release_LTCG|Xbox 360.Build.0 = Release_LTCG|Xbox 360
 		{10CF9C2F-73B3-49FA-9B63-393ACF8D1181}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{10CF9C2F-73B3-49FA-9B63-393ACF8D1181}.Release|Xbox 360.Build.0 = Release|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.CodeAnalysis|Xbox 360.ActiveCfg = CodeAnalysis|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.CodeAnalysis|Xbox 360.Build.0 = CodeAnalysis|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.CodeAnalysis|Xbox 360.Deploy.0 = CodeAnalysis|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Debug|Xbox 360.Deploy.0 = Debug|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile_FastCap|Xbox 360.ActiveCfg = Profile_FastCap|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile_FastCap|Xbox 360.Build.0 = Profile_FastCap|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile_FastCap|Xbox 360.Deploy.0 = Profile_FastCap|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile|Xbox 360.ActiveCfg = Profile|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile|Xbox 360.Build.0 = Profile|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Profile|Xbox 360.Deploy.0 = Profile|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release_LTCG|Xbox 360.ActiveCfg = Release_LTCG|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release_LTCG|Xbox 360.Build.0 = Release_LTCG|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release_LTCG|Xbox 360.Deploy.0 = Release_LTCG|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.Build.0 = Release|Xbox 360
+		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
