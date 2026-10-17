@@ -9,20 +9,20 @@ const char* g_strVertexShaderProgram =
 " struct VS_IN                                 "  
 " {                                            " 
 "     float4 ObjPos   : POSITION;              "
-"     float4 Color    : COLOR;                 "             
-" };                                           " 
-"                                              " 
+"     float2 Tex      : TEXCOORD0;             "
+" };                                           "
+"                                              "
 " struct VS_OUT                                " 
 " {                                            " 
 "     float4 ProjPos  : POSITION;              "
-"     float4 Color    : COLOR;                 "  
+"     float2 Tex      : TEXCOORD0;             "
 " };                                           "  
 "                                              "  
 " VS_OUT main( VS_IN In )                      "  
 " {                                            "  
 "     VS_OUT Out;                              "  
 "     Out.ProjPos = mul( matWVP, In.ObjPos );  "
-"     Out.Color = In.Color;                    "
+"     Out.Tex = In.Tex;                        "
 "     return Out;                              "
 " }                                            ";
 
@@ -30,23 +30,24 @@ const char* g_strVertexShaderProgram =
 // Pixel shader
 //-------------------------------------------------------------------------------------
 const char* g_strPixelShaderProgram = 
+" sampler2D s0 : register(s0);                 "
 " struct PS_IN                                 "
 " {                                            "
-"     float4 Color : COLOR;                    "                  
+"     float2 Tex : TEXCOORD0;                  "                  
 " };                                           "
 "                                              "  
 " float4 main( PS_IN In ) : COLOR              "  
 " {                                            "  
-"     return In.Color;                         "
+"     return tex2D( s0, In.Tex );              "
 " }                                            "; 
 
 //-------------------------------------------------------------------------------------
 // Structure to hold vertex data.
 //-------------------------------------------------------------------------------------
-struct COLORVERTEX
+struct TEXVERTEX
 {
-    float       Position[3];
-    DWORD       Color;
+    float Position[3];
+    float Tex[2];
 };
 
 //-------------------------------------------------------------------------------------
@@ -73,6 +74,10 @@ D3DVertexBuffer*       g_pVB;           // Buffer to hold vertices
 D3DVertexDeclaration*  g_pVertexDecl;   // Vertex format decl
 D3DVertexShader*       g_pVertexShader; // Vertex Shader
 D3DPixelShader*        g_pPixelShader;  // Pixel Shader
+D3DTexture* g_pTexture;
+
+const UINT SI_WIDTH  = 224;
+const UINT SI_HEIGHT = 256;
 
 XMMATRIX g_matWorld;
 XMMATRIX g_matProj;
@@ -84,7 +89,6 @@ BOOL g_bWidescreen = TRUE;
 
 void InitTime()
 {    
-
     // Get the frequency of the timer
     LARGE_INTEGER qwTicksPerSec;
     QueryPerformanceFrequency( &qwTicksPerSec );
@@ -184,15 +188,15 @@ HRESULT InitScene()
     // Create a vertex declaration from the element descriptions.
     D3DVERTEXELEMENT9 VertexElements[3] =
     {
-        { 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-        D3DDECL_END()
+		{ 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+		{ 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+		D3DDECL_END()
     };
     g_pd3dDevice->CreateVertexDeclaration( VertexElements, &g_pVertexDecl );
 
     // Create the vertex buffer. Here we are allocating enough memory
     // (from the default pool) to hold all our 3 custom vertices. 
-    if( FAILED( g_pd3dDevice->CreateVertexBuffer( 6*sizeof(COLORVERTEX),
+    if( FAILED( g_pd3dDevice->CreateVertexBuffer( 6*sizeof(TEXVERTEX),
                                                   D3DUSAGE_WRITEONLY, 
                                                   NULL,
                                                   D3DPOOL_MANAGED, 
@@ -205,24 +209,21 @@ HRESULT InitScene()
     // vertex buffer may still be in use by the GPU. This can happen if the
     // CPU gets ahead of the GPU. The GPU could still be rendering the previous
     // frame.
-    COLORVERTEX g_Vertices[] =
+    TEXVERTEX g_Vertices[] =
     {
-        { -1.0f, -1.0f, 0.0f, 0xffffffff }, // x, y, z, color
-        { -1.0f,  1.0f, 0.0f, 0xffffffff },
-        {  1.0f,  1.0f, 0.0f, 0xffffffff },
-        {  1.0f,  1.0f, 0.0f, 0xffffffff }, // x, y, z, color
-        {  1.0f, -1.0f, 0.0f, 0xffffffff },
-		{ -1.0f, -1.0f, 0.0f, 0xffffffff },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
     };
 
-    COLORVERTEX* pVertices;
+    TEXVERTEX* pVertices;
     if( FAILED( g_pVB->Lock( 0, 0, (void**)&pVertices, 0 ) ) )
         return E_FAIL;
-    memcpy( pVertices, g_Vertices, 6*sizeof(COLORVERTEX) );
+    memcpy( pVertices, g_Vertices, 6*sizeof(TEXVERTEX) );
     g_pVB->Unlock();
-
-    // Initialize the world matrix
-    g_matWorld = XMMatrixIdentity();
 
     // Initialize the projection matrix
     FLOAT fAspect = ( g_bWidescreen ) ? (16.0f / 9.0f) : (4.0f / 3.0f); 
@@ -233,6 +234,34 @@ HRESULT InitScene()
     XMVECTOR vLookatPt = { 0.0f, 0.0f, 0.0f, 0.0f };
     XMVECTOR vUp       = { 0.0f, 1.0f, 0.0f, 0.0f };
     g_matView = XMMatrixLookAtLH( vEyePt, vLookatPt, vUp );
+
+	if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
+                                         D3DFMT_LIN_A8R8G8B8, 0,
+                                         &g_pTexture, NULL)))
+		return E_FAIL;
+
+	D3DLOCKED_RECT lr;
+    if (FAILED(g_pTexture->LockRect(0, &lr, NULL, 0 )))
+        return E_FAIL;
+
+    for (int x = 0; x < 224; x++)
+    {
+        for (int yb = 0; yb < 32; yb++)
+        {
+            BYTE b = (yb % 2) ^ ((x / 8) % 2) ? 0x00 : 0xFF; // checkered pattern for debugging
+            for( int bit = 0; bit < 8; bit++ )
+            {
+                int y = 255 - (yb * 8 + bit);
+                DWORD* row = (DWORD*)((BYTE*)lr.pBits + y * lr.Pitch);
+                row[x] = ((b >> bit) & 1) ? 0xFFFFFFFF : 0xFF000000;
+            }
+        }
+    }
+
+    g_pTexture->UnlockRect(0);
+
+
+	g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
 
     return S_OK;
 }
@@ -268,13 +297,19 @@ void Render()
     // to specify the source of that stream, which is our vertex buffer. 
     // Then we need to let D3D know what vertex and pixel shaders to use. 
     g_pd3dDevice->SetVertexDeclaration( g_pVertexDecl );
-    g_pd3dDevice->SetStreamSource( 0, g_pVB, 0, sizeof(COLORVERTEX) );
+    g_pd3dDevice->SetStreamSource( 0, g_pVB, 0, sizeof(TEXVERTEX) );
     g_pd3dDevice->SetVertexShader( g_pVertexShader );
     g_pd3dDevice->SetPixelShader( g_pPixelShader );
    
     // Build the world-view-projection matrix and pass it into the vertex shader
     XMMATRIX matWVP = g_matWorld * g_matView * g_matProj;
     g_pd3dDevice->SetVertexShaderConstantF( 0, (FLOAT*)&matWVP, 4);
+
+	g_pd3dDevice->SetTexture(0, g_pTexture);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU,  D3DTADDRESS_CLAMP);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV,  D3DTADDRESS_CLAMP);
 
     // Draw the vertices in the vertex buffer
     g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
