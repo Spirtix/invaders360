@@ -69,6 +69,8 @@ Testing/
 
 #Visual Studio
 ipch/
+*.suo
+*.user
 *.sdf
 *.xgd
 Debug/
