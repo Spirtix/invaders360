@@ -367,17 +367,21 @@ void __cdecl main()
 	cpu.port_in = portIn;
 	cpu.port_out = portOut;
 
-	const int CYCLES = 30000;
+	const int CYCLES_PER_FRAME = (2 * 1000 * 1000) / 60;
     for (;;)
     {
         UpdateTime();
 	
 		int cycles = 0;
-		while (cycles < CYCLES) {
-			++cycles;
+		while (cpu.cyc < CYCLES_PER_FRAME / 2) {
 			i8080_step(&cpu);
 		}
 		i8080_interrupt(&cpu, 0xCF);
+
+		while (cpu.cyc < CYCLES_PER_FRAME) {
+			i8080_step(&cpu);
+		}
+		cpu.cyc = 0;
 		i8080_interrupt(&cpu, 0xD7);
 
         Render();
