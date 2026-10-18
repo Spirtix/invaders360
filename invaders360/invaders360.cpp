@@ -1,5 +1,6 @@
 #include "stdafx.h"
-
+#include <stdio.h>
+#include <i8080.h>
 //-------------------------------------------------------------------------------------
 // Vertex shader
 //-------------------------------------------------------------------------------------
@@ -86,6 +87,7 @@ XMMATRIX g_matView;
 TimeInfo g_Time;
 
 BOOL g_bWidescreen = TRUE;
+UCHAR memory[16384];
 
 void InitTime()
 {    
@@ -240,26 +242,6 @@ HRESULT InitScene()
                                          &g_pTexture, NULL)))
 		return E_FAIL;
 
-	D3DLOCKED_RECT lr;
-    if (FAILED(g_pTexture->LockRect(0, &lr, NULL, 0 )))
-        return E_FAIL;
-
-    for (int x = 0; x < 224; x++)
-    {
-        for (int yb = 0; yb < 32; yb++)
-        {
-            BYTE b = (yb % 2) ^ ((x / 8) % 2) ? 0x00 : 0xFF; // checkered pattern for debugging
-            for( int bit = 0; bit < 8; bit++ )
-            {
-                int y = 255 - (yb * 8 + bit);
-                DWORD* row = (DWORD*)((BYTE*)lr.pBits + y * lr.Pitch);
-                row[x] = ((b >> bit) & 1) ? 0xFFFFFFFF : 0xFF000000;
-            }
-        }
-    }
-
-    g_pTexture->UnlockRect(0);
-
 
 	g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
 
@@ -287,6 +269,26 @@ void Update()
 
 void Render()
 {
+
+	D3DLOCKED_RECT lr;
+    if (FAILED(g_pTexture->LockRect(0, &lr, NULL, 0 )))
+        return;
+
+    for (int x = 0; x < 224; x++)
+    {
+        for (int yb = 0; yb < 32; yb++)
+        {
+            BYTE b = memory[0x2400 + x * 32 + yb];
+            for( int bit = 0; bit < 8; bit++ )
+            {
+                int y = 255 - (yb * 8 + bit);
+                DWORD* row = (DWORD*)((BYTE*)lr.pBits + y * lr.Pitch);
+                row[x] = ((b >> bit) & 1) ? 0xFFFFFFFF : 0xFF000000;
+            }
+        }
+    }
+
+    g_pTexture->UnlockRect(0);
     // Clear the backbuffer to a blue color
     g_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 
                          D3DCOLOR_XRGB(0,0,0), 1.0f, 0L );
@@ -318,6 +320,29 @@ void Render()
     g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+static UCHAR readByte(void* userdata, USHORT addr) {
+  if (addr >= 0x6000)
+    return 0;
+  if (addr >= 0x4000)
+    addr -= 0x2000;
+
+  return memory[addr];
+}
+
+static void writeByte(void* userdata, USHORT addr, UCHAR val) {
+  if (addr >= 0x2000 && addr < 0x4000) {
+    memory[addr] = val;
+  }
+}
+
+static UCHAR portIn(void* userdata, UCHAR port) {
+	return 0;
+}
+
+static void portOut(void* userdata, UCHAR port, UCHAR value) {
+	return;
+}
+
 void __cdecl main()
 {
     if( FAILED(InitD3D()))
@@ -328,10 +353,33 @@ void __cdecl main()
 
     InitTime();
 
+	FILE* f = fopen("game:\\invaders.rom", "rb");
+	if (!f) return;
+
+	memset(memory, 0, 16384);
+	size_t n = fread(memory, 1, sizeof(memory), f);
+	fclose(f);
+
+	i8080 cpu;
+	i8080_init(&cpu);
+	cpu.read_byte = readByte;
+	cpu.write_byte = writeByte;
+	cpu.port_in = portIn;
+	cpu.port_out = portOut;
+
+	const int CYCLES = 30000;
     for (;;)
     {
-
         UpdateTime();
+	
+		int cycles = 0;
+		while (cycles < CYCLES) {
+			++cycles;
+			i8080_step(&cpu);
+		}
+		i8080_interrupt(&cpu, 0xCF);
+		i8080_interrupt(&cpu, 0xD7);
+
         Render();
     }
 }
