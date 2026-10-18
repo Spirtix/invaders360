@@ -228,20 +228,14 @@ HRESULT InitScene()
     g_pVB->Unlock();
 
     // Initialize the projection matrix
-    FLOAT fAspect = ( g_bWidescreen ) ? (16.0f / 9.0f) : (4.0f / 3.0f); 
-    g_matProj = XMMatrixPerspectiveFovLH( XM_PIDIV4, fAspect, 1.0f, 200.0f );
-
-    // Initialize the view matrix
-    XMVECTOR vEyePt    = { 0.0f, 0.0f,-7.0f, 0.0f };
-    XMVECTOR vLookatPt = { 0.0f, 0.0f, 0.0f, 0.0f };
-    XMVECTOR vUp       = { 0.0f, 1.0f, 0.0f, 0.0f };
-    g_matView = XMMatrixLookAtLH( vEyePt, vLookatPt, vUp );
+	FLOAT fAspect = g_bWidescreen ? (16.0f / 9.0f) : (4.0f / 3.0f);
+	g_matProj = XMMatrixOrthographicLH(2.0f * fAspect, 2.0f, 0.0f, 1.0f);
+	g_matView = XMMatrixIdentity();
 
 	if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
                                          D3DFMT_LIN_A8R8G8B8, 0,
                                          &g_pTexture, NULL)))
 		return E_FAIL;
-
 
 	g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
 
