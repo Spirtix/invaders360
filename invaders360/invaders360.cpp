@@ -335,12 +335,25 @@ static void writeByte(void* userdata, USHORT addr, UCHAR val) {
   }
 }
 
+static UCHAR offset, msb, lsb;
 static UCHAR portIn(void* userdata, UCHAR port) {
+	if (port == 3) {
+		USHORT shift = (msb << 8) | lsb;
+		return (shift >> (8 - offset)) & 0xFF;
+	}
 	return 0;
 }
 
 static void portOut(void* userdata, UCHAR port, UCHAR value) {
-	return;
+	switch (port) {
+	case 3:
+		offset = value & 7;
+		break;
+	case 4:
+		lsb = msb;
+		msb = value;
+		break;
+	}
 }
 
 void __cdecl main()
