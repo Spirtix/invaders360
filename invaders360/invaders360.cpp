@@ -190,9 +190,9 @@ HRESULT InitScene()
     // Create a vertex declaration from the element descriptions.
     D3DVERTEXELEMENT9 VertexElements[3] =
     {
-		{ 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-		{ 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-		D3DDECL_END()
+        { 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+        { 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+        D3DDECL_END()
     };
     g_pd3dDevice->CreateVertexDeclaration( VertexElements, &g_pVertexDecl );
 
@@ -213,12 +213,12 @@ HRESULT InitScene()
     // frame.
     TEXVERTEX g_Vertices[] =
     {
-		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
-		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
-		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
-		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
-		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
-		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
+        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
+        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
     };
 
     TEXVERTEX* pVertices;
@@ -228,16 +228,16 @@ HRESULT InitScene()
     g_pVB->Unlock();
 
     // Initialize the projection matrix
-	FLOAT fAspect = g_bWidescreen ? (16.0f / 9.0f) : (4.0f / 3.0f);
-	g_matProj = XMMatrixOrthographicLH(2.0f * fAspect, 2.0f, 0.0f, 1.0f);
-	g_matView = XMMatrixIdentity();
+    FLOAT fAspect = g_bWidescreen ? (16.0f / 9.0f) : (4.0f / 3.0f);
+    g_matProj = XMMatrixOrthographicLH(2.0f * fAspect, 2.0f, 0.0f, 1.0f);
+    g_matView = XMMatrixIdentity();
 
-	if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
+    if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
                                          D3DFMT_LIN_A8R8G8B8, 0,
                                          &g_pTexture, NULL)))
-		return E_FAIL;
+        return E_FAIL;
 
-	g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
+    g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
 
     return S_OK;
 }
@@ -264,7 +264,7 @@ void Update()
 void Render()
 {
 
-	D3DLOCKED_RECT lr;
+    D3DLOCKED_RECT lr;
     if (FAILED(g_pTexture->LockRect(0, &lr, NULL, 0 )))
         return;
 
@@ -301,11 +301,11 @@ void Render()
     XMMATRIX matWVP = g_matWorld * g_matView * g_matProj;
     g_pd3dDevice->SetVertexShaderConstantF( 0, (FLOAT*)&matWVP, 4);
 
-	g_pd3dDevice->SetTexture(0, g_pTexture);
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU,  D3DTADDRESS_CLAMP);
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV,  D3DTADDRESS_CLAMP);
+    g_pd3dDevice->SetTexture(0, g_pTexture);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU,  D3DTADDRESS_CLAMP);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV,  D3DTADDRESS_CLAMP);
 
     // Draw the vertices in the vertex buffer
     g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
@@ -324,34 +324,34 @@ static UCHAR readByte(void* userdata, USHORT addr) {
 }
 
 static void writeByte(void* userdata, USHORT addr, UCHAR val) {
-	if (addr >= 0x4000)
-		addr -= 0x2000;
-	if (addr >= 0x2000 && addr < 0x4000) {
-		memory[addr] = val;
+    if (addr >= 0x4000)
+        addr -= 0x2000;
+    if (addr >= 0x2000 && addr < 0x4000) {
+        memory[addr] = val;
   }
 }
 
 static UCHAR offset, msb, lsb, port1, port2;
 static UCHAR portIn(void* userdata, UCHAR port) {
-	if (port == 3) {
-		USHORT shift = (msb << 8) | lsb;
-		return (shift >> (8 - offset)) & 0xFF;
-	}
-	if (port == 1)
-		return port1;
-	return 0;
+    if (port == 3) {
+        USHORT shift = (msb << 8) | lsb;
+        return (shift >> (8 - offset)) & 0xFF;
+    }
+    if (port == 1)
+        return port1;
+    return 0;
 }
 
 static void portOut(void* userdata, UCHAR port, UCHAR value) {
-	switch (port) {
-	case 2:
-		offset = value & 7;
-		break;
-	case 4:
-		lsb = msb;
-		msb = value;
-		break;
-	}
+    switch (port) {
+    case 2:
+        offset = value & 7;
+        break;
+    case 4:
+        lsb = msb;
+        msb = value;
+        break;
+    }
 }
 
 void __cdecl main()
@@ -364,50 +364,49 @@ void __cdecl main()
 
     InitTime();
 
-	FILE* f = fopen("game:\\invaders.rom", "rb");
-	if (!f) return;
+    FILE* f = fopen("game:\\invaders.rom", "rb");
+    if (!f) return;
 
-	memset(memory, 0, 0x6000);
-	size_t n = fread(memory, 1, sizeof(memory), f);
-	fclose(f);
+    memset(memory, 0, 0x6000);
+    size_t n = fread(memory, 1, sizeof(memory), f);
+    fclose(f);
 
-	i8080 cpu;
-	i8080_init(&cpu);
-	cpu.read_byte = readByte;
-	cpu.write_byte = writeByte;
-	cpu.port_in = portIn;
-	cpu.port_out = portOut;
-
-	const int CYCLES_PER_FRAME = (2 * 1000 * 1000) / 60;
+    i8080 cpu;
+    i8080_init(&cpu);
+    cpu.read_byte = readByte;
+    cpu.write_byte = writeByte;
+    cpu.port_in = portIn;
+    cpu.port_out = portOut;
+    const int CYCLES_PER_FRAME = (2 * 1000 * 1000) / 60;
     for (;;)
     {
         UpdateTime();
-	
-		int cycles = 0;
-		while (cpu.cyc < CYCLES_PER_FRAME / 2) {
-			i8080_step(&cpu);
-		}
-		i8080_interrupt(&cpu, 0xCF);
+    
+        int cycles = 0;
+        while (cpu.cyc < CYCLES_PER_FRAME / 2) {
+            i8080_step(&cpu);
+        }
+        i8080_interrupt(&cpu, 0xCF);
 
-		while (cpu.cyc < CYCLES_PER_FRAME) {
-			i8080_step(&cpu);
-		}
-		cpu.cyc = 0;
-		i8080_interrupt(&cpu, 0xD7);
+        while (cpu.cyc < CYCLES_PER_FRAME) {
+            i8080_step(&cpu);
+        }
+        cpu.cyc = 0;
+        i8080_interrupt(&cpu, 0xD7);
 
-		Render();
-		XINPUT_STATE state;
-		port1 = 0;
-		if (XInputGetState(0, &state) == ERROR_SUCCESS)
-		{
-			WORD buttons = state.Gamepad.wButtons;
+        Render();
+        XINPUT_STATE state;
+        port1 = 0;
+        if (XInputGetState(0, &state) == ERROR_SUCCESS)
+        {
+            WORD buttons = state.Gamepad.wButtons;
 
-			if (buttons & XINPUT_GAMEPAD_Y) port1 |= 1;
-			if (buttons & XINPUT_GAMEPAD_B) port1 |= 1 << 2;
-			if (buttons & XINPUT_GAMEPAD_A) port1 |= 1 << 4;
-			if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) port1 |= 1 << 5;
-			if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) port1 |= 1 << 6;
-		}
+            if (buttons & XINPUT_GAMEPAD_Y) port1 |= 1;
+            if (buttons & XINPUT_GAMEPAD_B) port1 |= 1 << 2;
+            if (buttons & XINPUT_GAMEPAD_A) port1 |= 1 << 4;
+            if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) port1 |= 1 << 5;
+            if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) port1 |= 1 << 6;
+        }
     }
 }
 
