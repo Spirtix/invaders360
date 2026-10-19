@@ -87,7 +87,7 @@ XMMATRIX g_matView;
 TimeInfo g_Time;
 
 BOOL g_bWidescreen = TRUE;
-UCHAR memory[16384];
+UCHAR memory[0x6000];
 
 void InitTime()
 {    
@@ -324,8 +324,10 @@ static UCHAR readByte(void* userdata, USHORT addr) {
 }
 
 static void writeByte(void* userdata, USHORT addr, UCHAR val) {
-  if (addr >= 0x2000 && addr < 0x4000) {
-    memory[addr] = val;
+	if (addr >= 0x4000)
+		addr -= 0x2000;
+	if (addr >= 0x2000 && addr < 0x4000) {
+		memory[addr] = val;
   }
 }
 
@@ -365,7 +367,7 @@ void __cdecl main()
 	FILE* f = fopen("game:\\invaders.rom", "rb");
 	if (!f) return;
 
-	memset(memory, 0, 16384);
+	memset(memory, 0, 0x6000);
 	size_t n = fread(memory, 1, sizeof(memory), f);
 	fclose(f);
 
