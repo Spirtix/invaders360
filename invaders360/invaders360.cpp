@@ -342,7 +342,7 @@ static UCHAR portIn(void* userdata, UCHAR port) {
 
 static void portOut(void* userdata, UCHAR port, UCHAR value) {
 	switch (port) {
-	case 3:
+	case 2:
 		offset = value & 7;
 		break;
 	case 4:
