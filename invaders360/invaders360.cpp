@@ -329,12 +329,14 @@ static void writeByte(void* userdata, USHORT addr, UCHAR val) {
   }
 }
 
-static UCHAR offset, msb, lsb;
+static UCHAR offset, msb, lsb, port1, port2;
 static UCHAR portIn(void* userdata, UCHAR port) {
 	if (port == 3) {
 		USHORT shift = (msb << 8) | lsb;
 		return (shift >> (8 - offset)) & 0xFF;
 	}
+	if (port == 1)
+		return port1;
 	return 0;
 }
 
@@ -391,7 +393,19 @@ void __cdecl main()
 		cpu.cyc = 0;
 		i8080_interrupt(&cpu, 0xD7);
 
-        Render();
+		Render();
+		XINPUT_STATE state;
+		port1 = 0;
+		if (XInputGetState(0, &state) == ERROR_SUCCESS)
+		{
+			WORD buttons = state.Gamepad.wButtons;
+
+			if (buttons & XINPUT_GAMEPAD_Y) port1 |= 1;
+			if (buttons & XINPUT_GAMEPAD_B) port1 |= 1 << 2;
+			if (buttons & XINPUT_GAMEPAD_A) port1 |= 1 << 4;
+			if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) port1 |= 1 << 5;
+			if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) port1 |= 1 << 6;
+		}
     }
 }
 
