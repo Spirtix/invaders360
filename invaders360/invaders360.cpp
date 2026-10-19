@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <stdio.h>
-#include <i8080.h>
+#include "cpu.h"
 //-------------------------------------------------------------------------------------
 // Vertex shader
 //-------------------------------------------------------------------------------------
@@ -87,7 +87,6 @@ XMMATRIX g_matView;
 TimeInfo g_Time;
 
 BOOL g_bWidescreen = TRUE;
-UCHAR memory[0x6000];
 
 void InitTime()
 {    
@@ -190,9 +189,9 @@ HRESULT InitScene()
     // Create a vertex declaration from the element descriptions.
     D3DVERTEXELEMENT9 VertexElements[3] =
     {
-        { 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-        D3DDECL_END()
+		{ 0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+		{ 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+		D3DDECL_END()
     };
     g_pd3dDevice->CreateVertexDeclaration( VertexElements, &g_pVertexDecl );
 
@@ -213,12 +212,12 @@ HRESULT InitScene()
     // frame.
     TEXVERTEX g_Vertices[] =
     {
-        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
-        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
-        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
-        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
-        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
-        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f },
     };
 
     TEXVERTEX* pVertices;
@@ -228,16 +227,16 @@ HRESULT InitScene()
     g_pVB->Unlock();
 
     // Initialize the projection matrix
-    FLOAT fAspect = g_bWidescreen ? (16.0f / 9.0f) : (4.0f / 3.0f);
-    g_matProj = XMMatrixOrthographicLH(2.0f * fAspect, 2.0f, 0.0f, 1.0f);
-    g_matView = XMMatrixIdentity();
+	FLOAT fAspect = g_bWidescreen ? (16.0f / 9.0f) : (4.0f / 3.0f);
+	g_matProj = XMMatrixOrthographicLH(2.0f * fAspect, 2.0f, 0.0f, 1.0f);
+	g_matView = XMMatrixIdentity();
 
-    if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
+	if (FAILED(g_pd3dDevice->CreateTexture( SI_WIDTH, SI_HEIGHT, 1, 0,
                                          D3DFMT_LIN_A8R8G8B8, 0,
                                          &g_pTexture, NULL)))
-        return E_FAIL;
+		return E_FAIL;
 
-    g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
+	g_matWorld = XMMatrixScaling((float)SI_WIDTH / SI_HEIGHT, 1.0f, 1.0f);
 
     return S_OK;
 }
@@ -261,18 +260,18 @@ void Update()
 {
 }
 
-void Render()
+void Render(uint8_t* vram)
 {
 
-    D3DLOCKED_RECT lr;
+	D3DLOCKED_RECT lr;
     if (FAILED(g_pTexture->LockRect(0, &lr, NULL, 0 )))
         return;
 
-    for (int x = 0; x < 224; x++)
+    for (int x = 0; x < SI_WIDTH; x++)
     {
         for (int yb = 0; yb < 32; yb++)
         {
-            BYTE b = memory[0x2400 + x * 32 + yb];
+            BYTE b = vram[x * 32 + yb];
             for( int bit = 0; bit < 8; bit++ )
             {
                 int y = 255 - (yb * 8 + bit);
@@ -301,57 +300,17 @@ void Render()
     XMMATRIX matWVP = g_matWorld * g_matView * g_matProj;
     g_pd3dDevice->SetVertexShaderConstantF( 0, (FLOAT*)&matWVP, 4);
 
-    g_pd3dDevice->SetTexture(0, g_pTexture);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU,  D3DTADDRESS_CLAMP);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV,  D3DTADDRESS_CLAMP);
+	g_pd3dDevice->SetTexture(0, g_pTexture);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU,  D3DTADDRESS_CLAMP);
+	g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV,  D3DTADDRESS_CLAMP);
 
     // Draw the vertices in the vertex buffer
     g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
 
     // Present the backbuffer contents to the display
     g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
-}
-
-static UCHAR readByte(void* userdata, USHORT addr) {
-  if (addr >= 0x6000)
-    return 0;
-  if (addr >= 0x4000)
-    addr -= 0x2000;
-
-  return memory[addr];
-}
-
-static void writeByte(void* userdata, USHORT addr, UCHAR val) {
-    if (addr >= 0x4000)
-        addr -= 0x2000;
-    if (addr >= 0x2000 && addr < 0x4000) {
-        memory[addr] = val;
-  }
-}
-
-static UCHAR offset, msb, lsb, port1, port2;
-static UCHAR portIn(void* userdata, UCHAR port) {
-    if (port == 3) {
-        USHORT shift = (msb << 8) | lsb;
-        return (shift >> (8 - offset)) & 0xFF;
-    }
-    if (port == 1)
-        return port1;
-    return 0;
-}
-
-static void portOut(void* userdata, UCHAR port, UCHAR value) {
-    switch (port) {
-    case 2:
-        offset = value & 7;
-        break;
-    case 4:
-        lsb = msb;
-        msb = value;
-        break;
-    }
 }
 
 void __cdecl main()
@@ -364,49 +323,41 @@ void __cdecl main()
 
     InitTime();
 
-    FILE* f = fopen("game:\\invaders.rom", "rb");
-    if (!f) return;
+    bus bus;
+    cpu cpu(bus);
 
-    memset(memory, 0, 0x6000);
-    size_t n = fread(memory, 1, sizeof(memory), f);
-    fclose(f);
+	FILE* f = fopen("game:\\invaders.rom", "rb");
+	if (!f) return;
 
-    i8080 cpu;
-    i8080_init(&cpu);
-    cpu.read_byte = readByte;
-    cpu.write_byte = writeByte;
-    cpu.port_in = portIn;
-    cpu.port_out = portOut;
-    const int CYCLES_PER_FRAME = (2 * 1000 * 1000) / 60;
+	
+    size_t n = fread(bus.getMemoryPtr(0), 1, 0x4000, f);
+	fclose(f);
+
+	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
     for (;;)
     {
         UpdateTime();
-    
-        int cycles = 0;
-        while (cpu.cyc < CYCLES_PER_FRAME / 2) {
-            i8080_step(&cpu);
-        }
-        i8080_interrupt(&cpu, 0xCF);
+	
+        cpu.run(CYCLES_HALF_FRAME);
+        cpu.interrupt(0xCF);
+        cpu.run(CYCLES_HALF_FRAME);
+        cpu.interrupt(0xD7);
 
-        while (cpu.cyc < CYCLES_PER_FRAME) {
-            i8080_step(&cpu);
-        }
-        cpu.cyc = 0;
-        i8080_interrupt(&cpu, 0xD7);
+        Render(bus.getMemoryPtr(0x2400));
+		XINPUT_STATE state;
 
-        Render();
-        XINPUT_STATE state;
-        port1 = 0;
-        if (XInputGetState(0, &state) == ERROR_SUCCESS)
-        {
-            WORD buttons = state.Gamepad.wButtons;
+		if (XInputGetState(0, &state) == ERROR_SUCCESS)
+		{
+			WORD buttons = state.Gamepad.wButtons;
+            uint8_t mask = 0;
+			if (buttons & XINPUT_GAMEPAD_Y) mask |= 1;
+			if (buttons & XINPUT_GAMEPAD_B) mask |= 1 << 2;
+			if (buttons & XINPUT_GAMEPAD_A) mask |= 1 << 4;
+			if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) mask |= 1 << 5;
+			if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) mask |= 1 << 6;
 
-            if (buttons & XINPUT_GAMEPAD_Y) port1 |= 1;
-            if (buttons & XINPUT_GAMEPAD_B) port1 |= 1 << 2;
-            if (buttons & XINPUT_GAMEPAD_A) port1 |= 1 << 4;
-            if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) port1 |= 1 << 5;
-            if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) port1 |= 1 << 6;
-        }
+            bus.setInputMask(mask);
+		}
     }
 }
 

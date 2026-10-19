@@ -222,9 +222,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="8080\i8080.c" />
   </ItemGroup>
   <ItemGroup>
