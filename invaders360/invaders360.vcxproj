@@ -245,11 +245,14 @@
   <ItemGroup>
     <ClInclude Include="bus.h" />
     <ClInclude Include="cpu.h" />
+    <ClInclude Include="gameScreenRenderer.h" />
+    <ClInclude Include="shaders.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bus.cpp" />
     <ClCompile Include="cpu.cpp" />
+    <ClCompile Include="gameScreenRenderer.cpp" />
     <ClCompile Include="invaders360.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">Create</PrecompiledHeader>

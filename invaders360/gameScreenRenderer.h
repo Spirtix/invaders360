@@ -1,0 +1,31 @@
+#pragma once
+#include <stdint.h>
+
+class gameScreenRenderer {
+public:
+    gameScreenRenderer() : widescreen(true) {}
+    ~gameScreenRenderer();
+    HRESULT init();
+    void render(uint8_t* vram);
+private:
+    HRESULT initD3D();
+    HRESULT initScene();
+    D3DDevice* d3dDevice;
+    D3DVertexBuffer* VB;
+    D3DVertexDeclaration* vertexDecl;
+    D3DVertexShader* vShader;
+    D3DPixelShader* pShader;
+    D3DTexture* texture;
+    static const UINT SI_WIDTH  = 224;
+    static const UINT SI_HEIGHT = 256;
+
+    XMMATRIX matWorld;
+    XMMATRIX matProj;
+    XMMATRIX matView;
+    BOOL widescreen;
+    struct TEXVERTEX
+    {
+        float Position[3];
+        float Tex[2];
+    };
+};
