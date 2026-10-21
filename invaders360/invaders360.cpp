@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "cpu.h"
 #include "gameScreenRenderer.h"
+#include "audio.h"
 
 //-------------------------------------------------------------------------------------
 // Time             Since fAppTime is a float, we need to keep the quadword app time 
@@ -62,6 +63,8 @@ void __cdecl main()
 
     bus bus;
     cpu cpu(bus);
+    audio audio;
+    audio.init();
 
 	FILE* f = fopen("game:\\invaders.rom", "rb");
 	if (!f) return;
@@ -69,6 +72,14 @@ void __cdecl main()
 	
     size_t n = fread(bus.getMemoryPtr(0), 1, 0x4000, f);
 	fclose(f);
+
+    f = fopen("game:\\sound.raw", "rb");
+	if (!f) return;
+
+    uint8_t snd[3263];
+    n = fread(snd, 1, 3263, f);
+	fclose(f);
+    audio.play(snd, 0);
 
 	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
     for (;;)

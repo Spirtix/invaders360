@@ -215,7 +215,7 @@
     </Link>
     <Deploy>
       <DeploymentType>CopyToHardDrive</DeploymentType>
-      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(OutDir)invaders.rom</DeploymentFiles>
+      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(OutDir)invaders.rom;$(RemoteRoot)=$(OutDir)sound.raw</DeploymentFiles>
     </Deploy>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">
@@ -243,6 +243,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="audio.h" />
     <ClInclude Include="bus.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="gameScreenRenderer.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="audio.cpp" />
     <ClCompile Include="bus.cpp" />
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="gameScreenRenderer.cpp" />
