@@ -247,6 +247,7 @@
     <ClInclude Include="bus.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="gameScreenRenderer.h" />
+    <ClInclude Include="loader.h" />
     <ClInclude Include="shaders.h" />
     <ClInclude Include="SoundData.h" />
     <ClInclude Include="stdafx.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="gameScreenRenderer.cpp" />
     <ClCompile Include="invaders360.cpp" />
+    <ClCompile Include="loader.cpp" />
     <ClCompile Include="SoundData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">Create</PrecompiledHeader>

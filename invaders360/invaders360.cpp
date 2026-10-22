@@ -3,6 +3,7 @@
 #include "cpu.h"
 #include "gameScreenRenderer.h"
 #include "audio.h"
+#include "loader.h"
 
 //-------------------------------------------------------------------------------------
 // Time             Since fAppTime is a float, we need to keep the quadword app time 
@@ -73,13 +74,8 @@ void __cdecl main()
     size_t n = fread(bus.getMemoryPtr(0), 1, 0x4000, f);
 	fclose(f);
 
-    f = fopen("game:\\sound.raw", "rb");
-	if (!f) return;
-
-    uint8_t snd[3263];
-    n = fread(snd, 1, 3263, f);
-	fclose(f);
-    audio.play(snd, 0);
+    std::vector<SoundData> sounds = loader::LoadSoundPak("game:\\sounds.pak");
+    audio.play(sounds[1].data, 0);
 
 	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
     for (;;)
