@@ -215,7 +215,7 @@
     </Link>
     <Deploy>
       <DeploymentType>CopyToHardDrive</DeploymentType>
-      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(OutDir)invaders.rom;$(RemoteRoot)=$(OutDir)sound.raw</DeploymentFiles>
+      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(OutDir)invaders.rom;$(RemoteRoot)=$(SolutionDir)res\sounds.pak</DeploymentFiles>
     </Deploy>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">
@@ -248,6 +248,7 @@
     <ClInclude Include="cpu.h" />
     <ClInclude Include="gameScreenRenderer.h" />
     <ClInclude Include="shaders.h" />
+    <ClInclude Include="SoundData.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -256,6 +257,7 @@
     <ClCompile Include="cpu.cpp" />
     <ClCompile Include="gameScreenRenderer.cpp" />
     <ClCompile Include="invaders360.cpp" />
+    <ClCompile Include="SoundData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">Create</PrecompiledHeader>
