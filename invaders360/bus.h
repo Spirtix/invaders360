@@ -1,5 +1,5 @@
 #pragma once
-#include "stdint.h"
+#include <stdint.h>
 
 class bus {
 public:
@@ -11,8 +11,11 @@ public:
     uint8_t* getMemoryPtr(uint16_t address);
     size_t getMemorySize() { return memSize; }
     void setInputMask(uint8_t mask);
+    uint8_t getPortValue(uint8_t port);
 private:
     static const size_t memSize = 0x4000;
+    static const size_t numPorts = 6;
     uint8_t memory[memSize];
-    uint8_t port1, port2, offset, msb, lsb;
+    uint8_t ports[numPorts];
+    uint8_t offset, msb, lsb;
 };

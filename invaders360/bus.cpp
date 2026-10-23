@@ -2,12 +2,11 @@
 #include "bus.h"
 
 bus::bus() {
-    port1 = 0;
-    port2 = 0;
     offset = 0;
     msb = 0;
     lsb = 0;
     memset(memory, 0, 0x4000);
+    memset(ports, 0, numPorts);
 }
 
 uint8_t bus::readByte(uint16_t address) {
@@ -28,12 +27,16 @@ void bus::writeByte(uint16_t address, uint8_t value) {
 }
 
 uint8_t bus::portIn(uint8_t port) {
-	if (port == 3) {
-		USHORT shift = (msb << 8) | lsb;
+    switch (port) {
+    case 0:
+    case 1:
+    case 2:
+        return ports[port];
+    case 3:
+        uint16_t shift = (msb << 8) | lsb;
 		return (shift >> (8 - offset)) & 0xFF;
-	}
-	if (port == 1)
-		return port1;
+        break;
+    }
 	return 0;
 }
 
@@ -46,6 +49,10 @@ void bus::portOut(uint8_t port, uint8_t value) {
 		lsb = msb;
 		msb = value;
 		break;
+    case 3:
+    case 5:
+        ports[port] = value;
+        break;
 	}
 }
 
@@ -54,5 +61,9 @@ uint8_t* bus::getMemoryPtr(uint16_t address) {
 }
 
 void bus::setInputMask(uint8_t mask) {
-    port1 = mask;
+    ports[1] = mask;
+}
+
+uint8_t bus::getPortValue(uint8_t port) {
+    return ports[port];
 }
