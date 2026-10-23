@@ -75,7 +75,7 @@ void __cdecl main()
 	fclose(f);
 
     std::vector<SoundData> sounds = loader::LoadSoundPak("game:\\sounds.pak");
-    audio.play(sounds[1].data, 0);
+    audio.play(sounds[8]);
 
 	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
     for (;;)
