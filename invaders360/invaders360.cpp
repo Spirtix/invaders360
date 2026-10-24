@@ -83,7 +83,7 @@ void __cdecl main()
     sounds[0].setLoop(true);
 
 	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
-    uint8_t prevAudioBits1 = 0, prevAudioBits2 = 0;
+    uint16_t prevAudioBits = 0;
     for (;;)
     {
         UpdateTime();
@@ -109,23 +109,15 @@ void __cdecl main()
             bus.setInputMask(mask);
 		}
 
-        uint8_t audioBits = bus.getPortValue(3);
-        uint8_t flipped = ~prevAudioBits1 & audioBits;
-        if (~audioBits & prevAudioBits1 & 1)
+        uint16_t audioBits = (bus.getPortValue(3) & 0x0F) | (bus.getPortValue(5) << 4);
+        uint16_t flipped = ~prevAudioBits & audioBits;
+        if (~audioBits & prevAudioBits & 1)
             sounds[0].stop();
-        for (uint8_t i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 9; ++i) {
             if ((flipped >> i) & 1)
                 sounds[i].play();
         }
-
-        prevAudioBits1 = audioBits;
-        audioBits = bus.getPortValue(5);
-        flipped = ~prevAudioBits2 & audioBits;
-        for (uint8_t i = 0; i < 5; ++i) {
-            if ((flipped >> i) & 1)
-                sounds[i + 4].play();
-        }
-        prevAudioBits2 = audioBits;
+        prevAudioBits = audioBits;
     }
 }
 
