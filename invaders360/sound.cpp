@@ -40,3 +40,7 @@ void sound::stop() {
     voice->Stop();
     voice->FlushSourceBuffers();
 }
+
+void sound::setLoop(bool loop) {
+    buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
+}

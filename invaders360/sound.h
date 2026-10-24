@@ -13,6 +13,7 @@ public:
     ~sound();
     void play();
     void stop();
+    void setLoop(bool loop);
 private:
     sound(const sound&);
     sound& operator=(const sound&);

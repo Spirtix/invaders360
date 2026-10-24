@@ -80,6 +80,7 @@ void __cdecl main()
     for (size_t i = 0; i < soundData.size(); ++i) {
         sounds.push_back(sound(audio, soundData[i]));
     }
+    sounds[0].setLoop(true);
 
 	const int CYCLES_HALF_FRAME = (2 * 1000 * 1000) / 60 / 2;
     uint8_t prevAudioBits1 = 0, prevAudioBits2 = 0;
@@ -110,10 +111,13 @@ void __cdecl main()
 
         uint8_t audioBits = bus.getPortValue(3);
         uint8_t flipped = ~prevAudioBits1 & audioBits;
+        if (~audioBits & prevAudioBits1 & 1)
+            sounds[0].stop();
         for (uint8_t i = 0; i < 4; ++i) {
             if ((flipped >> i) & 1)
                 sounds[i].play();
         }
+
         prevAudioBits1 = audioBits;
         audioBits = bus.getPortValue(5);
         flipped = ~prevAudioBits2 & audioBits;
