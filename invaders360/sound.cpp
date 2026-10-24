@@ -19,6 +19,8 @@ sound::sound(audio& audio, SoundData& soundData) : data(soundData.data) {
     buffer.AudioBytes = soundData.length;
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.LoopCount = 0;
+    buffer.LoopBegin  = 0;
+    buffer.LoopLength = soundData.length;
 }
 
 sound::sound(sound&& o) : data(std::move(o.data)), buffer(o.buffer), voice(o.voice) {
