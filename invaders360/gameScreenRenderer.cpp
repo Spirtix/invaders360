@@ -1,6 +1,20 @@
 #include "stdafx.h"
 #include "gameScreenRenderer.h"
 #include "shaders.h"
+#include <algorithm>
+
+gameScreenRenderer::gameScreenRenderer() : widescreen(true) {
+    std::fill_n(overlay, SI_WIDTH * SI_HEIGHT, 0xFFFFFFFFu);
+}
+
+gameScreenRenderer::gameScreenRenderer(std::vector<rectangle>& overlayRects) : widescreen(true) {
+    std::fill_n(overlay, SI_WIDTH * SI_HEIGHT, 0xFFFFFFFFu);
+    for (auto it = overlayRects.begin(); it != overlayRects.end(); ++it) {
+        for (size_t y = it->y; y < it->y + it->height; ++y) {
+            std::fill_n(overlay + y * SI_WIDTH + it->x, it->width, it->color);
+        }
+    }
+}
 
 HRESULT gameScreenRenderer::init() {
     HRESULT res;
@@ -32,7 +46,7 @@ void gameScreenRenderer::render(uint8_t* vram) {
             {
                 int y = 255 - (yb * 8 + bit);
                 DWORD* row = (DWORD*)((BYTE*)lr.pBits + y * lr.Pitch);
-                row[x] = ((b >> bit) & 1) ? 0xFFFFFFFF : 0xFF000000;
+                row[x] = ((b >> bit) & 1) ? overlay[y * SI_WIDTH + x] : 0xFF000000;
             }
         }
     }

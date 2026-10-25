@@ -60,7 +60,12 @@ void __cdecl main()
 
     InitTime();
 
-    gameScreenRenderer renderer;
+    std::vector<rectangle> overlayRects;
+    overlayRects.emplace_back(rectangle(0, 32, 224, 32, 0xFFFF0000));  // red
+    overlayRects.emplace_back(rectangle(0, 192, 224, 48, 0xFF00FF00));  // green
+    overlayRects.emplace_back(rectangle(16, 240, 118, 16, 0xFF00FF00)); // green (lives)
+
+    gameScreenRenderer renderer(overlayRects);
     renderer.init();
 
     bus bus;

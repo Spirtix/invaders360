@@ -1,9 +1,12 @@
 #pragma once
 #include <stdint.h>
+#include <vector>
+#include "rectangle.h"
 
 class gameScreenRenderer {
 public:
-    gameScreenRenderer() : widescreen(true) {}
+    gameScreenRenderer();
+    gameScreenRenderer(std::vector<rectangle>& overlay);
     ~gameScreenRenderer();
     HRESULT init();
     void render(uint8_t* vram);
@@ -18,6 +21,7 @@ private:
     D3DTexture* texture;
     static const UINT SI_WIDTH  = 224;
     static const UINT SI_HEIGHT = 256;
+    uint32_t overlay[SI_WIDTH * SI_HEIGHT];
 
     XMMATRIX matWorld;
     XMMATRIX matProj;

@@ -248,6 +248,7 @@
     <ClInclude Include="cpu.h" />
     <ClInclude Include="gameScreenRenderer.h" />
     <ClInclude Include="loader.h" />
+    <ClInclude Include="rectangle.h" />
     <ClInclude Include="shaders.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="SoundData.h" />
