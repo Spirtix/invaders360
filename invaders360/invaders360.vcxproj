@@ -215,8 +215,12 @@
     </Link>
     <Deploy>
       <DeploymentType>CopyToHardDrive</DeploymentType>
-      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(OutDir)invaders.rom;$(RemoteRoot)=$(SolutionDir)res\sounds.pak</DeploymentFiles>
+      <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)=$(SolutionDir)res\invaders.rom;$(RemoteRoot)=$(SolutionDir)res\sounds.pak</DeploymentFiles>
     </Deploy>
+    <PostBuildEvent>
+      <Command>xcopy /Y /D /I "$(SolutionDir)res\invaders.rom" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)res\sounds.pak" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">
     <ClCompile>

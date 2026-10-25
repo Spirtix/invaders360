@@ -75,3 +75,5 @@ ipch/
 *.xgd
 Debug/
 Release/
+
+res/invaders.rom

@@ -44,7 +44,6 @@ Global
 		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release_LTCG|Xbox 360.Deploy.0 = Release_LTCG|Xbox 360
 		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.Build.0 = Release|Xbox 360
-		{7B2ADD30-F831-42A0-A465-E414ECD12B19}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
