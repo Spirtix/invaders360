@@ -55,6 +55,12 @@ void UpdateTime()
     g_Time.fAppTime          = g_Time.fSecsPerTick * ((FLOAT)(g_Time.qwAppTime.QuadPart));    
 }
 
+bool isPadConnected(uint32_t index)
+{
+    XINPUT_STATE state;
+    return XInputGetState(index, &state) == ERROR_SUCCESS;
+}
+
 void padInput(bus& bus, uint32_t padIndex, uint8_t portIndex) {
     XINPUT_STATE state;
 
@@ -65,7 +71,17 @@ void padInput(bus& bus, uint32_t padIndex, uint8_t portIndex) {
         if (padIndex == 0) {
 	        if (buttons & XINPUT_GAMEPAD_Y) mask |= 1;
 	        if (buttons & XINPUT_GAMEPAD_B) mask |= 1 << 2;
-            if (buttons & XINPUT_GAMEPAD_X) mask |= 1 << 1;
+            if (buttons & XINPUT_GAMEPAD_X) {
+                if (isPadConnected(1))
+                    mask |= 1 << 1;
+                else {
+                    MESSAGEBOX_RESULT res;
+                    XOVERLAPPED ov;
+                    LPCWSTR btn[] = { L"OK" };
+                    XShowMessageBoxUI(0, L"Controller missing", L"Controller 2 is not connected.\nA second controller is required for two player mode.",
+                        1, btn, 0, XMB_WARNINGICON, &res, &ov);
+                }
+            }
         }
         if (buttons & XINPUT_GAMEPAD_A) mask |= 1 << 4;
 	    if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) mask |= 1 << 5;
