@@ -55,6 +55,26 @@ void UpdateTime()
     g_Time.fAppTime          = g_Time.fSecsPerTick * ((FLOAT)(g_Time.qwAppTime.QuadPart));    
 }
 
+void padInput(bus& bus, uint32_t padIndex, uint8_t portIndex) {
+    XINPUT_STATE state;
+
+    if (XInputGetState(padIndex, &state) == ERROR_SUCCESS)
+    {
+	    WORD buttons = state.Gamepad.wButtons;
+        uint8_t mask = 0;
+        if (padIndex == 0) {
+	        if (buttons & XINPUT_GAMEPAD_Y) mask |= 1;
+	        if (buttons & XINPUT_GAMEPAD_B) mask |= 1 << 2;
+            if (buttons & XINPUT_GAMEPAD_X) mask |= 1 << 1;
+        }
+        if (buttons & XINPUT_GAMEPAD_A) mask |= 1 << 4;
+	    if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) mask |= 1 << 5;
+	    if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) mask |= 1 << 6;
+
+        bus.setPort(portIndex, mask);
+    }
+}
+
 void __cdecl main()
 {
 
@@ -99,20 +119,9 @@ void __cdecl main()
         cpu.interrupt(0xD7);
 
         renderer.render(bus.getMemoryPtr(0x2400));
-		XINPUT_STATE state;
 
-		if (XInputGetState(0, &state) == ERROR_SUCCESS)
-		{
-			WORD buttons = state.Gamepad.wButtons;
-            uint8_t mask = 0;
-			if (buttons & XINPUT_GAMEPAD_Y) mask |= 1;
-			if (buttons & XINPUT_GAMEPAD_B) mask |= 1 << 2;
-			if (buttons & XINPUT_GAMEPAD_A) mask |= 1 << 4;
-			if (buttons & XINPUT_GAMEPAD_DPAD_LEFT) mask |= 1 << 5;
-			if (buttons & XINPUT_GAMEPAD_DPAD_RIGHT) mask |= 1 << 6;
-
-            bus.setInputMask(mask);
-		}
+        padInput(bus, 0, 1);
+        padInput(bus, 1, 2);
 
         uint16_t audioBits = (bus.getPortValue(3) & 0x0F) | (bus.getPortValue(5) << 4);
         uint16_t flipped = ~prevAudioBits & audioBits;

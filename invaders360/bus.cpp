@@ -60,8 +60,8 @@ uint8_t* bus::getMemoryPtr(uint16_t address) {
     return memory + address;
 }
 
-void bus::setInputMask(uint8_t mask) {
-    ports[1] = mask;
+void bus::setPort(uint8_t index, uint8_t bits) {
+    ports[index] = bits;
 }
 
 uint8_t bus::getPortValue(uint8_t port) {

@@ -10,7 +10,7 @@ public:
     void portOut(uint8_t port, uint8_t value);
     uint8_t* getMemoryPtr(uint16_t address);
     size_t getMemorySize() { return memSize; }
-    void setInputMask(uint8_t mask);
+    void setPort(uint8_t index, uint8_t bits);
     uint8_t getPortValue(uint8_t port);
 private:
     static const size_t memSize = 0x4000;

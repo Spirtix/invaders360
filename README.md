@@ -10,12 +10,12 @@ Invaders360 is an arcade emulator of the 1978 Space Invaders for the Xbox 360.
 **Working:**
 
 - 1 player game
+- 2 player game
 - Sounds
 - Color overlay
 
 **TODO:**
 
-- 2 player game
 - High score persistence
 - Better input and sound handling
 - Better GPU drawing. Right now the game screen is redrawn to a texture, which is then rendered by the GPU.
@@ -25,6 +25,7 @@ Invaders360 is an arcade emulator of the 1978 Space Invaders for the Xbox 360.
 - B - 1 player game
 - A - Shoot
 - D-Pad left / right - move left / right
+- In two-player mode shoot and D-Pad actions are mapped to the second connected controller
 
 ## Building
 
